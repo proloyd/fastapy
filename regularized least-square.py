@@ -78,7 +78,6 @@ plt.figure('sparse least-square')
 plt.subplot(2, 1, 1)
 plt.stem(x,  linefmt=':')
 plt.stem(solution)
-# plt.legend('True', 'Recovered')
 plt.xlabel('Index')
 plt.ylabel('Signal Value')
 
