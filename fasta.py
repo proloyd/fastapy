@@ -2,7 +2,7 @@
 python implementation of FASTA:
 
 An fast implementation of Proximal Gradient Descent solver
-Created on Sun Mar 04 16:05:29 2018
+Created on Sun Mar 11 16:05:29 2018
 
 @author: Proloy Das
 """
