@@ -28,8 +28,11 @@ The iterations converges to a fixed point given that
 $0 < \eta^{(l)} < 2/ \mathscr{L}(\nabla f)$, 
 \end{align}
 
-where $\mathscr{L}(\nabla f)$ is  Lipschitz constant of $\nabla f$\cite{combettes2005signal}. 
-Since $\mathscr{L}(\nabla f)$ for the problem is not known, back-tracking line-search is
+where $\mathscr{L}(\nabla f)$ is  Lipschitz constant of $\nabla f$. Since 
+$\mathscr{L}(\nabla f)$ for the problem is not known, back-tracking line-search is
 used to guarantee the stability of the algorithm. Along with that, in order to accelerate 
-the the convergence, we initialized the step-sizes using "adaptive" BB-method\cite{zhou2006gradient}. 
-The implementation is largely inspired by FASTA solver \cite{goldstein2014field}.
+the the convergence, we initialized the step-sizes using "adaptive" BB-method. 
+The implementation is largely inspired by FASTA solver[1].
+
+[1] Goldstein, Tom, Christoph Studer, and Richard Baraniuk. "A field guide to forward-
+backward splitting with a FASTA implementation." arXiv preprint arXiv:1411.3406 (2014).
