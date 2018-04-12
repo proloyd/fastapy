@@ -1,6 +1,6 @@
 """
-This script shows how to use FASTA to solve Lasso problem:
-        min  .5||Ax-b||^2 mu*|x|
+This script shows how to use FASTA to solve regularized least-square problem:
+        min  .5||Ax-b||^2 + mu*|x|
 Where A is an MxN matrix, b is an Mx1 vector of measurements, and x is the Nx1 vector of unknowns.
 The parameter 'mu' controls the strength of the regularizer.
 
