@@ -42,8 +42,16 @@ def fastapy(f, g, gradf, proxg, x0, beta=0.5, max_Iter=1000, tol=1e-8):
     :return: out 
     a dict containing the solution, objective values, residuals
     """
+    
+    # estimate Lipschitz constant ans initialize tau
+    x = x0 + 0.01*np.random.randn(x0.shape[0],x0.shape[1])
+    L = np.square(linalg.norm(gradf(x0)-gradf(x),'fro'))/np.square(linalg.norm(x0-x, 'fro'))
+    tau = 1/L
 
-    # Save f(x) values for back-tracking
+    x = np.copy(x0)
+    gradfx = gradf(x)
+	
+	 # Save f(x) values for back-tracking
     fx = np.empty((0))
     fx = np.append (fx, f(x))
     
@@ -53,37 +61,29 @@ def fastapy(f, g, gradf, proxg, x0, beta=0.5, max_Iter=1000, tol=1e-8):
     
     # Save Residuals for returning
     residual = np.empty((0))
-    
-    # estimate Lipschitz constant ans initialize tau
-    x = x0 + 0.01*np.random.randn(x0.shape[0],x0.shape[1])
-    L = np.square(np.linalg.norm(gradf(x0)-gradf(x),'fro'))/np.square(np.linalg.norm(x0-x, 'fro'))
-    tau = 1/L
-    tol = 1e-8
-    x = np.copy(x0)
-    gradfx = gradf(x)
 
-    for i in tqdm.tqdm(range(max_Iter)):
+    for _ in tqdm.tqdm(range(max_Iter)):
         time.sleep(0.001)
 
         # backtracking for step size - tau
         z = proxg(x - tau*gradfx, tau)
         fk = np.max(fx)
         # fk = fx[-1]
-        while f(z) > fk + np.sum(gradfx*(z-x)) + np.square(np.linalg.norm(z-x, 'fro'))/(2*tau):
+        while f(z) > fk + np.sum(gradfx*(z-x)) + np.square(linalg.norm(z-x, 'fro'))/(2*tau):
             tau = beta*tau
             z = proxg(x - tau*gradfx, tau)
 
         # Check for convergence and if reached break
         gradfz = gradf(z)
-        residual = np.append(residual, np.linalg.norm(gradfz + (x - tau*gradfx - z) / tau, 'fro') ** 2)
+        residual = np.append(residual, linalg.norm(gradfz + (x - tau*gradfx - z) / tau, 'fro') ** 2)
         if residual[-1]/residual[0] < tol:
             break
         
         # choose next step size using adaptive BB method
         deltax = z - x
         deltaF = gradfz - gradfx
-        n_deltax = np.linalg.norm(deltax, 'fro') ** 2
-        n_deltaF = np.linalg.norm(deltaF, 'fro') ** 2
+        n_deltax = linalg.norm(deltax, 'fro') ** 2
+        n_deltaF = linalg.norm(deltaF, 'fro') ** 2
         innerproduct_xF = np.sum(deltax * deltaF)
         if n_deltax == 0:
             break
