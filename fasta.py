@@ -26,7 +26,7 @@ def fastapy(f, g, gradf, proxg, x0, beta=0.5, max_Iter=1000, tol=1e-8):
     :math:                        $g(x)$
     
     :param gradf: function handle for gradient of smooth differentiable function
-    :math:                    $\nabla f(x)$
+    :math:                     $\nabla f(x)$
     
     :param proxg: function handle for proximal operator of non-smooth convex function
     :math: ${\sf prox}_{\lambda g}(v) = \argmin_{x} g(x) + 1/(2*lambda)\| x-v\|**2 
