@@ -71,15 +71,15 @@ def shrink(x, mu):
 
 
 # Call Solver
-[solution, fval, residual] = fastapy( f,g,gradf,proxg,x0 )
+out = fastapy( f,g,gradf,proxg,x0 )
 
 # plot results
 plt.figure('sparse least-square')
 plt.subplot(2, 1, 1)
 plt.stem(x,  linefmt=':')
-plt.stem(solution)
+plt.stem(out["sol"])
 plt.xlabel('Index')
 plt.ylabel('Signal Value')
 
 plt.subplot(2, 1, 2)
-plt.semilogy(residual)
+plt.semilogy(out["residual"])
