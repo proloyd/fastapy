@@ -28,48 +28,66 @@ def fastapy(f, g, gradf, proxg, x0, beta=0.5, max_Iter=1000, tol=1e-8):
     :return: solution, function values, residual values
     """
 
+    # Save f(x) values for back-tracking
+    fx = np.empty((0))
+    fx = np.append (fx, f(x))
+    
+    # Save objective values for returing
+    fval = np.empty ((0))
+    fval = np.append (fval, fx[-1] + g(x))
+    
+    # Save Residuals for returning
+    residual = np.empty((0))
+    
     # estimate Lipschitz constant ans initialize tau
-    x = x0 + 0.001 * np.random.randn (x0.shape[0], x0.shape[1])
-    L = linalg.norm(gradf(x0) - gradf(x), 'fro')**2 / linalg.norm(x0 - x, 'fro')**2
-    tau = 1 / L
-
+    x = x0 + 0.01*np.random.randn(x0.shape[0],x0.shape[1])
+    L = np.square(np.linalg.norm(gradf(x0)-gradf(x),'fro'))/np.square(np.linalg.norm(x0-x, 'fro'))
+    tau = 1/L
+    tol = 1e-8
     x = np.copy(x0)
-    fval = np.empty(0)
-    fx = np.empty(0)
-    residual = np.empty(0)
-    for _ in tqdm.tqdm(range(max_Iter)):
-        time.sleep(0.001)
-        fx = np.append(fx, f(x))
+    gradfx = gradf(x)
 
-        # backtracking line search
-        grad = gradf(x)
-        z = proxg(x - tau * grad, tau)
-        # fk = np.max(fx)
-        fk = fx[-1]
-        while f(z) > fk + np.sum(grad * (z - x)) + linalg.norm(z - x, 'fro')**2 / (2 * tau):
-            tau = beta * tau
-            z = proxg(x - tau * grad, tau)
+    for i in range(max_Iter):
+        # time.sleep(0.001)
+        z = proxg(x - tau*gradfx, tau)
 
-        # compute residual
-        residual = np.append(residual, linalg.norm(gradf(z) + (x - tau * grad - z) / tau, 'fro') ** 2)
+        "backtracking"
+        fk = np.max(fx)
+        # fk = fx[-1]
+        while f(z) > fk + np.sum(gradfx*(z-x)) + np.square(np.linalg.norm(z-x, 'fro'))/(2*tau):
+            tau = beta*tau
+            z = proxg(x - tau*gradfx, tau)
 
-        x = np.copy(z)
-        fval = np.append(fval, f(x) + g(x))
-
-        # stopping condition
-        if residual[-1] / residual[0] < tol:
+        # Check for convergence and if reached break
+        gradfz = gradf(z)
+        residual = np.append(residual, np.linalg.norm(gradfz + (x - tau*gradfx - z) / tau, 'fro') ** 2)
+        if residual[-1]/residual[0] < tol:
             break
-
+        
         # choose next step size using adaptive BB method
         deltax = z - x
-        deltaF = gradf(z) - gradf(x)
-        tau_s = linalg.norm(deltax, 'fro')**2 / np.sum(deltax * deltaF)  # steepest descent
-        tau_m = np.sum(deltax * deltaF) / linalg.norm(deltaF, 'fro')**2  # minimum residual
-        if 2 * tau_m > tau_s:
-            tau_k = np.copy(tau_m)
+        deltaF = gradfz - gradfx
+        n_deltax = np.linalg.norm(deltax, 'fro') ** 2
+        n_deltaF = np.linalg.norm(deltaF, 'fro') ** 2
+        innerproduct_xF = np.sum(deltax * deltaF)
+        if n_deltax == 0:
+            break
+        elif (n_deltaF == 0) | (innerproduct_xF == 0):
+            tau = 1/L
         else:
-            tau_k = tau_s - 0.5 * tau_m
-        if tau_k > 0:
-            tau = np.copy(tau_k)
+            tau_s = n_deltax/innerproduct_xF  # steepest descent
+            tau_m = innerproduct_xF/n_deltaF  # minimum residual
+            # adaptive BB method
+            if 2*tau_m > tau_s:
+                tau_k = tau_m
+            else:
+                tau_k = tau_s - 0.5*tau_m
+            if tau_k > 0:
+                tau = tau_k
+
+        x = np.copy(z)
+        gradfx = np.copy(gradfz)
+        fx = np.append(fx, f(x))
+        fval = np.append(fval, fx[-1] + g(x))
 
     return x, fval, residual
