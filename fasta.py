@@ -39,7 +39,8 @@ def fastapy(f, g, gradf, proxg, x0, beta=0.5, max_Iter=1000, tol=1e-8):
     
     :param tol: tolerance
 
-    :return: solution, function values, residual values
+    :return: out 
+    a dict containing the solution, objective values, residuals
     """
 
     # Save f(x) values for back-tracking
@@ -103,5 +104,6 @@ def fastapy(f, g, gradf, proxg, x0, beta=0.5, max_Iter=1000, tol=1e-8):
         gradfx = np.copy(gradfz)
         fx = np.append(fx, f(x))
         fval = np.append(fval, fx[-1] + g(x))
-
-    return x, fval, residual
+       
+    out = {"sol": x, "objective values": fval, "residual": residual}
+    return out
