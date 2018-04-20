@@ -15,14 +15,28 @@ from scipy import linalg
 
 def fastapy(f, g, gradf, proxg, x0, beta=0.5, max_Iter=1000, tol=1e-8):
     """
-
-    :param f: function handle of smooth differentiable function
-    :param g: function handle of non-smooth convex function
+     Solves  
+     :math:               $\min_{x} f(x) + g(x)$
+     given following inputs:
+     
+    :param f: function handle of smooth differentiable function, 
+    :math:                        $f(x)$
+    
+    :param g: function handle of non-smooth convex function, g(x)
+    :math:                        $g(x)$
+    
     :param gradf: function handle for gradient of smooth differentiable function
+    :math:                    $\nabla f(x)$
+    
     :param proxg: function handle for proximal operator of non-smooth convex function
+    :math: ${\sf prox}_{\lambda g}(v) = \argmin_{x} g(x) + 1/(2*lambda)\| x-v\|**2 
+    
     :param x0: initial guess
+    
     :param beta: parameter
+    
     :param max_Iter: maximum number of iteration
+    
     :param tol: tolerance
 
     :return: solution, function values, residual values
@@ -47,11 +61,11 @@ def fastapy(f, g, gradf, proxg, x0, beta=0.5, max_Iter=1000, tol=1e-8):
     x = np.copy(x0)
     gradfx = gradf(x)
 
-    for i in range(max_Iter):
-        # time.sleep(0.001)
-        z = proxg(x - tau*gradfx, tau)
+    for i in tqdm.tqdm(range(max_Iter)):
+        time.sleep(0.001)
 
-        "backtracking"
+        # backtracking for step size - tau
+        z = proxg(x - tau*gradfx, tau)
         fk = np.max(fx)
         # fk = fx[-1]
         while f(z) > fk + np.sum(gradfx*(z-x)) + np.square(np.linalg.norm(z-x, 'fro'))/(2*tau):
