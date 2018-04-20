@@ -1,10 +1,12 @@
 """
-python implementation of FASTA:
+Module implementing FASTA:
 
 An fast implementation of Proximal Gradient Descent solver
 Created on Sun Mar 11 16:05:29 2018
 
 @author: Proloy Das
+
+@licence = apache 2.0
 """
 
 import numpy as np
