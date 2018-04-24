@@ -51,7 +51,7 @@ def gradf(x):
 
 
 def g(x):
-    "|x| < mu"
+    """mu*|x|"""
     return mu * linalg.norm(x, 1)
 
 
