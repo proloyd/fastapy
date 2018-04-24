@@ -16,7 +16,7 @@ from scipy import linalg
 
 
 def fastapy(f, g, gradf, proxg, x0, beta=0.5, max_Iter=1000, tol=1e-8):
-       """
+     """
      Solves
                         \min_{x} f(x) + g(x)
      given following inputs:
