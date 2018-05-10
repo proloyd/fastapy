@@ -28,7 +28,7 @@ stability of the algorithm. Along with that, in order to accelerate the
 convergence, we initialized the step-sizes using "adaptive" BB-method. 
 The implementation is largely inspired by FASTA solver[1].
 
-The assiciated script 'regularized least-square.py' shows how to use fastapy to solve 
+The assiciated script 'regularized_least-square.py' shows how to use fastapy to solve 
 regularized least-square problems.
 
 [1] Goldstein, Tom, Christoph Studer, and Richard Baraniuk. "A field guide to forward-
