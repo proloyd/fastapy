@@ -8,7 +8,7 @@ The parameter 'mu' controls the strength of the regularizer.
 
 import numpy as np
 from scipy import linalg
-from fasta import fastapy
+from fasta import Fasta
 import matplotlib.pyplot as plt
 import time
 
@@ -70,24 +70,20 @@ def shrink(x, mu):
     """
     return np.multiply(np.sign(x), np.maximum(np.abs(x) - mu, 0))
 
-
-start = time.time()
-
+# Set up Fasta solver
+lsq = Fasta(f, g, gradf, proxg)
 # Call Solver
-out = fastapy( f, g, gradf, proxg, x0, tol=1e-20)
-
-end = time.time()
-print 'Execution time {:10f} s'.format(end - start)
+lsq.learn(x0, verbose=1)
 
 # plot results
 plt.figure('sparse least-square')
 plt.subplot(2, 1, 1)
 plt.stem(x,  markerfmt='go', linefmt='g:', label='Ground truth')
-plt.stem(out["sol"], markerfmt='bo', label='Fasta solution')
+plt.stem(lsq.coefs, markerfmt='bo', label='Fasta solution')
 plt.xlabel('Index')
 plt.ylabel('Signal Value')
 
 plt.subplot(2, 1, 2)
-plt.semilogy(out["residual"])
+plt.semilogy(lsq.residuals)
 
 plt.show()
