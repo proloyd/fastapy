@@ -4,6 +4,8 @@ This script shows how to use FASTA to solve regularized least-square problem:
 Where A is an MxN matrix, b is an Mx1 vector of measurements, and x is the Nx1 vector of unknowns.
 The parameter 'mu' controls the strength of the regularizer.
 
+@author: Proloy DAS
+
 """
 
 import numpy as np
