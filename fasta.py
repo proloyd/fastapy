@@ -127,7 +127,12 @@ class Fasta:
     """
 
     Fast adaptive shrinkage/thresholding Algorithm
-
+    
+    Reference
+    ---------
+    Goldstein, Tom, Christoph Studer, and Richard Baraniuk. "A field guide to forward-backward
+    splitting with a FASTA implementation." arXiv preprint arXiv:1411.3406 (2014).
+    
     Parameters
     ----------
     f: function handle
