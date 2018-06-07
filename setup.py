@@ -7,7 +7,7 @@ setup(
 
     install_requires=[
         'numpy >= 1.8',
-        'scipy' >=0.17,
+        'scipy >=0.17',
     ],
 
 
