@@ -10,7 +10,7 @@ The parameter 'mu' controls the strength of the regularizer.
 
 import numpy as np
 from scipy import linalg
-from fasta import Fasta
+from fastapy import Fasta
 import matplotlib.pyplot as plt
 import time
 
@@ -40,6 +40,7 @@ b = b + sigma * np.random.randn(*b.shape)  # add noise
 
 #  The initial iterate:  a guess at the solution
 x0 = np.zeros((N, 1))
+
 
 # Create function handles
 def f(x):
@@ -72,6 +73,7 @@ def shrink(x, mu):
     """
     return np.multiply(np.sign(x), np.maximum(np.abs(x) - mu, 0))
 
+
 # Set up Fasta solver
 lsq = Fasta(f, g, gradf, proxg)
 # Call Solver
@@ -81,7 +83,7 @@ lsq.learn(x0, verbose=1)
 plt.figure('sparse least-square')
 plt.subplot(2, 1, 1)
 plt.stem(x,  markerfmt='go', linefmt='g:', label='Ground truth')
-plt.stem(lsq.coefs, markerfmt='bo', label='Fasta solution')
+plt.stem(lsq.coefs_, markerfmt='bo', label='Fasta solution')
 plt.xlabel('Index')
 plt.ylabel('Signal Value')
 

@@ -1,1 +1,1 @@
-from _fasta import Fasta
+from ._fasta import Fasta

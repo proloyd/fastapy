@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 setup(
-    name="fasta",
+    name="fastapy",
     version="0.1",
     description="fast adaptive proximal gradient descent algorithm",
     packages=find_packages(),
@@ -12,9 +12,9 @@ setup(
 
 
     # metadata for upload to PyPI
-    author = "Proloy Das",
-    author_email = "proloy@umd.com",
-    license = "apache",
+    author="Proloy DAS",
+    author_email="proloy@umd.com",
+    license="apache 2.0",
     project_urls = {
         "Source Code": "https://github.com/proloyd/fastapy",
     }
