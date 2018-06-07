@@ -1,0 +1,1 @@
+from _fasta import Fasta
