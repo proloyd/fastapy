@@ -19,10 +19,10 @@ import time
 M = 200  # number of measurements
 N = 1000  # dimension of sparse signal
 K = 10    # signal sparsity
-mu = .02  #  regularization parameter
-sigma = 0.01  #  The noise level in 'b'
+mu = .02  # regularization parameter
+sigma = 0.01  # The noise level in 'b'
 
-print 'Testing sparse least-squares with N={:}, M={:}'.format(N, M)
+print('Testing sparse least-squares with N={:}, M={:}'.format(N, M))
 
 # Create sparse signal
 x = np.zeros((N, 1))
