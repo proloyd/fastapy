@@ -55,7 +55,7 @@ def _compute_residual(deltaf, sg):
     return res, res_r
 
 
-def _update_coefs(x, tau, gradfx, prox, f, g, beta, fk):
+def _update_coefs(x, tau, gradfx, prox, f, g, beta, fk, linesearch=True):
     """Non-monotone line search
 
     parameters
@@ -86,20 +86,21 @@ def _update_coefs(x, tau, gradfx, prox, f, g, beta, fk):
     z = prox(x_hat, tau)
     fz = f(z)
     count = 0
-    while fz > fk + (gradfx * (z - x)).sum() + ((z - x) ** 2).sum() / (2 * tau) + g(z):
-        # np.square(linalg.norm(z - x, 'fro')) / (2 * tau):
-        count += 1
-        tau = beta * tau
-        x_hat = x - tau * gradfx
-        z = prox(x_hat, tau)
-        fz = f(z)
+    if linesearch:
+        while fz > fk + (gradfx * (z - x)).sum() + ((z - x) ** 2).sum() / (2 * tau):
+            # np.square(linalg.norm(z - x, 'fro')) / (2 * tau):
+            count += 1
+            tau *= beta
+            x_hat = x - tau * gradfx
+            z = prox(x_hat, tau)
+            fz = f(z)
 
     sg = (x_hat - z) / tau
     return z, fz, sg, tau, count
 
 
 class Fasta:
-    """Fast adaptive shrinkage/threshold Algorithm
+    r"""Fast adaptive shrinkage/threshold Algorithm
 
     Reference
     ---------
@@ -163,9 +164,8 @@ class Fasta:
     Create FASTA instance
     >>> lsq = Fasta(f, g, gradf, proxg)
     Call solver
-    >>> lsq.learn(x0, verbose=1)
+    >>> lsq.learn(x0, verbose=True)
     """
-
     def __init__(self, f, g, gradf, proxg, beta=0.5, n_iter=1000):
         self.f = f
         self.g = g
@@ -180,36 +180,36 @@ class Fasta:
     def __str__(self):
         return "Fast adaptive shrinkage/thresholding Algorithm instance"
 
-    def learn(self, coefs_init, tol=1e-2, verbose=0):
-        """fits the model using FASTA algorithm
+    def learn(self, coefs_init, tol=1e-4, verbose=False, linesearch=True, next_stepsize=_next_stepsize):
+        r"""fits the model using FASTA algorithm
 
         parameters
         ----------
         coefs_init: ndarray
             initial guess
-
         tol: float, optional
             tolerance parameter
             default is 1e-8
-
-        verbose: {0,1}
+        verbose: bool
             verbosity of the method : 1 will display informations while 0 will display nothing
             default = 0
-
+        linesearch: bool
+            if True (Default) uses line-search to fine step-size
+        next_stepsize: callable
+            a callable with argument (\deltax, \deltaGradf) which provides next step-size.
+            Default is a non-monotone step-size selection ('adaptive' BB) method.
         returns
         -------
         self
         """
         coefs_current = np.copy(coefs_init)
         grad_current = self.grad(coefs_current)
-        coefs_next = coefs_current \
-                     + 0.01 * np.random.randn(coefs_current.shape[0], coefs_current.shape[1])
+        coefs_next = coefs_current + 0.01 * np.random.randn(coefs_current.shape[0], coefs_current.shape[1])
         grad_next = self.grad(coefs_next)
-        tau_current = _next_stepsize(coefs_next - coefs_current,
-                                     grad_next - grad_current)
+        tau_current = next_stepsize(coefs_next - coefs_current, grad_next - grad_current)
 
         self._funcValues.append(self.f(coefs_current))
-        if verbose == 1:
+        if verbose:
             self.objective = []
             self.objective.append(self._funcValues[-1] + self.g(coefs_current))
             self.initial_stepsize = np.copy(tau_current)
@@ -220,7 +220,7 @@ class Fasta:
         for i in range(self.n_iter):
             coefs_next, objective_next, sub_grad, tau, n_backtracks \
                 = _update_coefs(coefs_current, tau_current, grad_current,
-                                self.prox, self.f, self.g, self.beta, max(self._funcValues))
+                                self.prox, self.f, self.g, self.beta, max(self._funcValues), linesearch)
 
             self._funcValues.append(objective_next)
 
@@ -234,9 +234,9 @@ class Fasta:
             residual_n = residual / (self.residuals[0] + 1e-15)
 
             # Find step size for next iteration
-            tau_next = _next_stepsize(delta_coef, delta_grad)
+            tau_next = next_stepsize(delta_coef, delta_grad)
 
-            if verbose == 1:
+            if verbose:
                 self.stepsizes.append(tau)
                 self.backtracks.append(n_backtracks)
                 self.objective.append(objective_next + self.g(coefs_next))
@@ -251,9 +251,9 @@ class Fasta:
             coefs_current = coefs_next
             grad_current = grad_next
 
-            if tau_next == 0 or min(residual_n, residual_r) < tol:  # convergence reached
+            if tau_next == 0.0 or min(residual_n, residual_r) < tol:  # convergence reached
                 break
-            elif tau_next < 0:  # non-convex probelms ->  negative stepsize -> use the previous value
+            elif tau_next < 0.0:  # non-convex probelms ->  negative stepsize -> use the previous value
                 tau_current = tau
             else:
                 tau_current = tau_next
