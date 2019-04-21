@@ -7,7 +7,7 @@ from scipy import linalg
 import time
 
 
-def _next_stepsize(deltax, deltaF):
+def _next_stepsize(deltax, deltaF, t=0):
     """A variation of spectral descent step-size selection: 'adaptive' BB method.
 
     Reference:
@@ -234,7 +234,7 @@ class Fasta:
             residual_n = residual / (self.residuals[0] + 1e-15)
 
             # Find step size for next iteration
-            tau_next = next_stepsize(delta_coef, delta_grad)
+            tau_next = next_stepsize(delta_coef, delta_grad, i)
 
             if verbose:
                 self.stepsizes.append(tau)
