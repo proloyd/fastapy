@@ -182,7 +182,7 @@ class Fasta:
     def __str__(self):
         return "Fast adaptive shrinkage/thresholding Algorithm instance"
 
-    def learn(self, coefs_init, tol=1e-4, verbose=False, linesearch=True, next_stepsize=_next_stepsize):
+    def learn(self, coefs_init, tol=1e-4, verbose=True, linesearch=True, next_stepsize=_next_stepsize):
         r"""fits the model using FASTA algorithm
 
         parameters
