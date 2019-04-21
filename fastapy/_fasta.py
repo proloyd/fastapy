@@ -6,6 +6,8 @@ from math import sqrt
 from scipy import linalg
 import time
 
+import logging
+
 
 def _next_stepsize(deltax, deltaF, t=0):
     """A variation of spectral descent step-size selection: 'adaptive' BB method.
@@ -202,6 +204,7 @@ class Fasta:
         -------
         self
         """
+        logger = logging.getLogger("FASTA")
         coefs_current = np.copy(coefs_init)
         grad_current = self.grad(coefs_current)
         coefs_next = coefs_current + 0.01 * np.random.randn(coefs_current.shape[0], coefs_current.shape[1])
@@ -217,6 +220,7 @@ class Fasta:
             self.backtracks = []
 
         start = time.time()
+        logger.debug(f"Iteration \t objective value \t step-size \t backtracking steps taken \t residual")
         for i in range(self.n_iter):
             coefs_next, objective_next, sub_grad, tau, n_backtracks \
                 = _update_coefs(coefs_current, tau_current, grad_current,
@@ -240,12 +244,8 @@ class Fasta:
                 self.stepsizes.append(tau)
                 self.backtracks.append(n_backtracks)
                 self.objective.append(objective_next + self.g(coefs_next))
-                print("Iteration : {:}, objective value : {:f}, "
-                      "stepsize : {:f}, backtracking steps taken: {:}, "
-                      "residual : {:f} \n".format(i + 1, self.objective[i],
-                                                  self.stepsizes[i],
-                                                  self.backtracks[i],
-                                                  self.residuals[i]))
+                logger.debug(
+                    f"{i} \t {self.objective[i]} \t {self.stepsizes[i]} \t {self.backtracks[i]} \t {self.residuals[i]}")
 
             # Prepare for next iteration
             coefs_current = coefs_next
@@ -262,6 +262,6 @@ class Fasta:
         self.coefs_ = coefs_current
         self.objective_value = objective_next + self.g(coefs_current)
         if verbose:
-            print("total time elapsed : {:f}s".format(end - start))
+            logger.debug(f"total time elapsed : {end - start}s")
 
         return self
