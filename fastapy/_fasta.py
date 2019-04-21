@@ -206,7 +206,7 @@ class Fasta:
         grad_current = self.grad(coefs_current)
         coefs_next = coefs_current + 0.01 * np.random.randn(coefs_current.shape[0], coefs_current.shape[1])
         grad_next = self.grad(coefs_next)
-        tau_current = next_stepsize(coefs_next - coefs_current, grad_next - grad_current)
+        tau_current = next_stepsize(coefs_next - coefs_current, grad_next - grad_current, 0)
 
         self._funcValues.append(self.f(coefs_current))
         if verbose:
